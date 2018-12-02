@@ -1,0 +1,209 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body, html {
+  height: 100%;
+  background: #fbf9f1;
+}
+
+p, button, input {
+  font-size: 14pt;
+  font-family: "Times New Roman";
+}
+
+button {
+  background-color: #86193d;
+  border-radius: 5px;
+  color: white;
+  padding: 2%;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #c8255b;
+}
+
+input {
+  margin: 2%;
+}
+
+#home-page, #city-page {
+  height: 100%;
+}
+
+.text-danger {
+  color: #86193d;
+}
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.header {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 4em;
+  font-family: "Apple Chancery";
+  color: white;
+}
+
+.home {
+  background-image: url("pic/beach.jpg");
+  height: 60%;
+}
+
+.home h1 {
+  padding-top: 10%;
+}
+
+.mask {
+  height: 100%;
+  background-color: rgba(10, 66, 148, 0.5);
+}
+
+.mask p {
+  font-size: 25px;
+  color: white;
+}
+
+.login {
+  width: 30%;
+  margin-top: 2%;
+  text-align: center;
+}
+
+.login button {
+  width: 30%;
+  margin: 2%;
+}
+
+.cities {
+  width: 80%;
+  height: 30%;
+  margin-top: 2%;
+  text-align: center;
+}
+
+.city-block {
+  position: relative;
+  width: 20%;
+  height: 80%;
+  margin: 2%;
+  display: inline-block;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+#sfo {
+  background-image: url("pic/sfo.jpg");
+}
+
+#nyc {
+  background-image: url("pic/nyc.jpg");
+}
+
+#chi {
+  background-image: url("pic/chi.jpeg");
+}
+
+#la {
+  background-image: url("pic/la.jpg");
+}
+
+.city-block .mask {
+  position: absolute;
+  padding: 2%;
+  width: 96%;
+  height: 20%;
+  bottom: 0;
+  background-color: rgba(134, 25, 61, 0.6);
+}
+
+.city-block:hover>.mask {
+  vertical-align: middle;
+  height: 95%;
+}
+
+.city-block:hover p {
+  cursor: pointer;
+  padding-top: 30%;
+  padding-bottom: 30%;
+}
+
+#nav {
+  float: right;
+  width: 13%;
+}
+
+#nav p {
+  margin: 3%;
+  padding: 5%;
+  font-size: 14pt;
+  display: inline-block;
+}
+
+#nav p:hover {
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: #86193d;
+}
+
+.city {
+  background-image: url("pic/sfo.jpg");
+  height: 25%;
+}
+
+.city h1 {
+  padding-top: 4%;
+}
+
+.city .mask {
+  background-color: rgba(10, 66, 148, 0.6);
+}
+
+.content {
+  width: 70%;
+  margin-top: 1%;
+}
+
+.sideBar {
+  float: left;
+  width: 22%;
+  height: 350px;
+  color: white;
+  padding: 2%;
+  border-radius: 5px;
+  background-color: #86193d;
+}
+
+.main {
+  float: right;
+  width: 73%;
+}
+
+.main button {
+  width: 49%;
+}
+
+.main p {
+  margin-top: 2%;
+}
+
+.trip {
+  background-image: url("pic/beach.jpg");
+  height: 25%;
+}
+
+.trip h1 {
+  padding-top: 4%;
+  padding-bottom: 1%;
+}
