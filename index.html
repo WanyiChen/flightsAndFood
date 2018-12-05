@@ -24,8 +24,8 @@
     </div>
     <div class="login container">
       <p id="status"></p>
-      <p>User name: <input id="user"></input></p>
-      <p>Password: <input id="pass" type="password"></input></p>
+      <p>User name: <input id="user" value='wanyi02'></input></p>
+      <p>Password: <input id="pass" type="password" value='730005015'></input></p>
       <button id="signup">Sign Up</button>
       <button id="login">Log in</button>
     </div>
@@ -67,29 +67,47 @@
     </div>
     <div class="content container">
       <div class="sideBar">
-        <p>filters, search, etc.</p>
-      </div>
-      <div class="main">
-        <button id="rest">Restaurant</button>
-        <button id="flight">Flight</button>
-        <p id="result"></p>
-      </div>
-    </div>
-  </div>
-
-  <div id="trip-page" hidden="true">
-    <div class="trip header">
-      <div class="mask">
-        <div>
-          <div id="nav">
-            <p class="nav-home">Home</p>
-            <p class="nav-myTrips">My Trips</p>
-          </div>
+        <div id="depart">Departure from: <br> 
+          <input id="depart_val" placeholder="City or Airport">
         </div>
-        <h1>My Trips</h1>
+        <div id="trip-type"><input type="radio" name="flight" value="round-trip" checked="checked"> Round Trip
+          <br>
+          <input type="radio" name="flight" value="one-way"> One Way<br>
+        </div>
+        <div id="trip-date"><div id="trip-date"><span>Departure Date:</span>
+          <br>
+        </div>
+        <input type="date" id="start" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+        
+        <div id='return-date'>
+          <span>Return Date:</span><br>
+          <input type="date" id="start" name="trip-start" value="2018-07-22" min="2018-01-01" max="2018-12-31">
+        </div>
       </div>
+      <button id="search">Search</button>
+
+    </div>
+    <div class="main">
+      <button id="rest">Restaurant</button>
+      <button id="flight">Flight: Departure</button>
+      <p id="result"></p>
     </div>
   </div>
+</div>
+
+<div id="trip-page" hidden="true">
+  <div class="trip header">
+    <div class="mask">
+      <div>
+        <div id="nav">
+          <p class="nav-home">Home</p>
+          <p class="nav-myTrips">My Trips</p>
+        </div>
+      </div>
+      <h1>My Trips</h1>
+    </div>
+  </div>
+</div>
 </body>
 
 </html>

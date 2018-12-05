@@ -207,3 +207,32 @@ input {
   padding-top: 4%;
   padding-bottom: 1%;
 }
+
+
+#depart{
+  width:100%;
+}
+
+.sideBar input{
+  width: 100%;
+}
+
+#trip-type input{
+  width: auto;
+}
+
+#trip-type{
+  margin-top:1em;
+}
+
+#search{
+  margin-top: 1em;
+}
+
+#trip-date input{
+  font-size: small;
+}
+
+#trip-date{
+  margin-top:1em;
+}
