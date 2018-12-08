@@ -188,6 +188,7 @@ input {
 .main {
   float: right;
   width: 73%;
+  height: 374px;
 }
 
 .main button {
@@ -206,6 +207,11 @@ input {
 .trip h1 {
   padding-top: 4%;
   padding-bottom: 1%;
+}
+
+#result{
+  height: 330px;
+  overflow: auto;
 }
 
 
@@ -235,4 +241,34 @@ input {
 
 #trip-date{
   margin-top:1em;
+}
+
+#buttom-b{
+  margin-top:0.5em;
+  width: 100%;
+}
+
+#buttom-b button{
+  float: right;
+  width: auto;
+}
+
+#result button{
+  padding: unset;
+  width: 3em;
+  float: right;
+}
+
+.flight{
+  overflow: auto;
+  width:98%;
+}
+
+.flight span{
+  vertical-align: middle;
+}
+
+#selected1,#selected2{
+  background-color:#c8255b;
+  width:4em !important;
 }
