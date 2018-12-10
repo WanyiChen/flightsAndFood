@@ -7,6 +7,12 @@ let select1,select2=''; //selected to and return flights
 let trips = [];
 let date1,date2='';
 
+/* Apply zomato API and impliment loadMyTip() and loadRestaurant() functions (12/10/2018 updated by jie)*/
+var zomato = require('zomato');
+var client = zomato.createClient({
+  userKey: '2ee136670cff3a1bd2e4a6d8427f1e36', //as obtained from [Zomato API](https://developers.zomato.com/apis)
+});
+
 $(document).ready(() => {
   getAirports();
   $("#login").on("click", () => {
@@ -76,9 +82,9 @@ $(document).ready(() => {
       let trip= new SingleTrip(flight.attr('airport1'),flight.attr('airport2'),date1,flight.attr('number'),$(flight.children('.date1')[0]).html(),$(flight.children('.date2')[0]).html());
       
     }
-    console.log(trip);
+    // console.log(trip);
 
-    loadMyTrip();
+    // loadMyTrip();
   });
 
 
@@ -182,6 +188,9 @@ function loadHome() {
   $("#nav").show();
 }
 
+/* loadMyTrip(): when clicked on MyTrip buttom (12/10/2018 updated by jie)
+	-- (1) show saved flights 
+	-- (2) show saved restaurants  */
 function loadMyTrip() {
   $("#home-page").hide();
   $("#city-page").hide();
@@ -209,12 +218,17 @@ function loadCity(cityName) {
 
 }
 
+/* loadRestaurant(): when clicked on restaurant buttom (12/10/2018 updated by jie)
+	-- (1) list restaurants 
+	-- (2) enable 'click to expand' and 'save to MyTrip' */
 function loadRestaurant() {
   $("#rest").css("background-color", "#c8255b");
   $("#flight").css("background-color", "#86193d");
   $('#flight-result').hide();
   $('#rest-result').show();
   $('#buttom-b').hide();
+  
+  
 }
 
 function loadFlight() {
@@ -434,12 +448,6 @@ function getAirlineInfo(id,flightDiv,handleData){
   });
 
 }
-
-
-function loadMyTrip(){
-
-
-};
 
 //when round trip
 let RoundTrip = function(airport1, airport2, date1, date2, number1, number2, time11,time12,time21,time22){
