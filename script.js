@@ -364,12 +364,12 @@ function getAirports(flight_id,departId,arrivalId){
         }
         console.log(airport_cities);
       }else{
-        alert("Can't get airport ID!");
+        alert("Can't get airports!");
       }
 
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      alert("Can't get airport ID!");
+      alert("Can't get airports!");
     }
   });
 }
