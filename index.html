@@ -7,8 +7,7 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
   <script src="script.js"></script>
   <!-- enabling googlemap api -->
-  <script async defer
-	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqMppihJId9-sU0NzLa-apCcp9DoI3Lck&callback=initMap">
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqMppihJId9-sU0NzLa-apCcp9DoI3Lck&callback=initMap">
   </script>
   <meta charset="UTF-8">
 </head>
@@ -71,65 +70,63 @@
     </div>
     <div class="content container">
       <div class="sideBar">
-        <div id="depart">Departure from: <br> 
-          <input id="depart_val" placeholder="City or Airport">
+        <div class="autocomplete" id="depart">Departure from: <br>
+          <input id="depart_val" name="cities" placeholder="City Name">
         </div>
-        <div id="trip-type"><input type="radio" name="flight" value="round-trip" checked="checked"> Round Trip
-          <br>
-          <input type="radio" name="flight" value="one-way"> One Way<br>
+          <div id="trip-type"><input type="radio" name="flight" value="round-trip" checked="checked"> Round Trip
+            <br>
+            <input type="radio" name="flight" value="one-way"> One Way<br>
         </div>
-        <div id="trip-date"><div id="trip-date"><span>Departure Date:</span>
-          <br>
+            <div id="trip-date">
+              <div id="trip-date"><span>Departure Date:</span>
+                <br>
         </div>
-        <input type="date" id="date-1" value="2018-11-28" min="2018-11-28" max="2019-01-14">
-        
-        <div id='return-date'>
-          <span>Return Date:</span><br>
-          <input type="date" id="date-2" value="2018-12-23" min="2018-11-28" max="2019-01-14">
+                <input type="date" id="date-1" value="2018-11-28" min="2018-11-28" max="2019-01-14">
+
+                <div id='return-date'>
+                  <span>Return Date:</span><br>
+                  <input type="date" id="date-2" value="2018-12-23" min="2018-11-28" max="2019-01-14">
         </div>
-      </div>
-      <button id="search">Search</button>
+                </div>
+                <button id="search">Search</button>
 
-    </div>
-    <div class="main">
-      <button id="rest">Restaurant</button>
-      <button id="flight">Flight: Departure</button>
-      <div id="result">
-        <div id="rest-result"><div id='map'><div></div>
-        <div id="flight-result" hidden="true">
-          <div id='flight1' hidden="true"></div>
-          <div id='flight2' hidden="true"></div>
-          <div id='loading' hidden="true">Loading</div>
-        </div>
+              </div>
+              <div class="main">
+                <button id="rest">Restaurant</button>
+                <button id="flight">Flight: Departure</button>
+                <div id="result">
+                  <div id="rest-result">
+                    <div id='map'>
+                    </div>
+                  </div>
 
-      </div>
+                  <div id="flight-result" hidden="true">
+                    <div id='flight1' hidden="true"></div>
+                    <div id='flight2' hidden="true"></div>
+                    <div id='loading' hidden="true">Loading...</div>
+                  </div>
+                </div>
 
-      <div id='buttom-b' hidden="true">
-        <button id='next-return' hidden="true">Next: Return flight</button>
-        <button hidden="true" id='prev' style='float:left'>Prev: Departure flight</button>
-        <button hidden="true" id='create'>Create trip</button>
-      </div>
-    </div>
+                <div id='buttom-b' hidden="true">
+                  <button id='next-return' hidden="true">Next: Return flight</button>
+                  <button hidden="true" id='prev' style='float:left'>Prev: Departure flight</button>
+                  <button hidden="true" id='create'>Create trip</button>
+                </div>
+              </div>
 
-
-    
-
-  </div>
-</div>
-
-<div id="trip-page" hidden="true">
-  <div class="trip header">
-    <div class="mask">
-      <div>
-        <div id="nav">
-          <p class="nav-home">Home</p>
-          <p class="nav-myTrips">My Trips</p>
-        </div>
-      </div>
-      <h1>My Trips</h1>
-    </div>
-  </div>
-</div>
+              <div id="trip-page" hidden="true">
+                <div class="trip header">
+                  <div class="mask">
+                    <div>
+                      <div id="nav">
+                        <p class="nav-home">Home</p>
+                        <p class="nav-myTrips">My Trips</p>
+                      </div>
+                    </div>
+                    <h1>My Trips</h1>
+                  </div>
+                </div>
+              </div>
 </body>
 
 </html>
