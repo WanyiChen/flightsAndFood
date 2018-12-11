@@ -74,9 +74,9 @@ $(document).ready(() => {
     loadFlight();
   });
 
-
   $('#create').on('click',(e)=>{
     let trip='';
+	$('#create').on('click',(e)=>{
     let target=$(e.target);
     if(trip_type=='round trip'){
       let flight1=$($('#selected1').parents('.flight')[0]);
@@ -92,8 +92,8 @@ $(document).ready(() => {
     console.log(trips);
     loadMyTrip();
   });
-
-
+  
+  
   $('input[type=radio][name=flight]').change(function() {
     $('#flight2').hide();
     $('#flight1').show();
@@ -134,19 +134,20 @@ $(document).ready(() => {
   $('#next-return').on("click",()=>{
     $('#next-return').hide();
     $('#prev').show();
-      //make sure do not load again
-      if($('#flight2').children().length==0){
-        findFlight(2);
-      }else{
-        $('#flight1').hide();
-        $('#flight2').show();
-        if($('#selected')){
-          $('#create').show();
-        }
+    //make sure do not load again
+    if($('#flight2').children().length==0){
+      findFlight(2);
+    }else{
+      $('#flight1').hide();
+      $('#flight2').show();
+      if($('#selected')){
+        $('#create').show();
       }
-    });
+    }
 
-  $('#flight').html('Flight: Arrival');
+    $('#flight').html('Flight: Arrival');
+    
+  });
 
   $('#prev').on('click',()=>{
     $('#prev').hide();
@@ -183,6 +184,7 @@ $(document).ready(() => {
       }
     }
   });
+
 });
 
 function loadHome() {
@@ -196,54 +198,55 @@ function loadHome() {
 /* loadMyTrip(): when clicked on MyTrip buttom (12/10/2018 updated by jie)
 	-- (1) show saved flights 
 	-- (2) show saved restaurants  */
-  function loadMyTrip() {
-    $("#home-page").hide();
-    $("#city-page").hide();
-    $("#trip-page").show();
-  }
+function loadMyTrip() {
+  $("#home-page").hide();
+  $("#city-page").hide();
+  $("#trip-page").show();
+}
 
-  function loadCity(cityName) {
-    $("#home-page").hide();
-    $("#city-page").show();
-    $("#city-header-title").text(cityName);
-    if (cityName == "San Francisco") {
-      city='San Francisco';
-      $(".city").css("background-image", "url(pic/sfo.jpg)");
-    } else if (cityName == "New York") {
-      city='New York';
-      $(".city").css("background-image", "url(pic/nyc.jpg)");
-    } else if (cityName == "Chicago") {
-      city='Chicago';
-      $(".city").css("background-image", "url(pic/chi.jpeg)");
-    } else if (cityName == "Los Angeles") {
-      city='Los Angeles';
-      $(".city").css("background-image", "url(pic/la.jpg)");
-    }
-    autocomplete(document.getElementById("depart_val"), airport_cities);
-    loadRestaurant();
-
-    $("#rest").on("click", () => {
-    });
+function loadCity(cityName) {
+  $("#home-page").hide();
+  $("#city-page").show();
+  $("#city-header-title").text(cityName);
+  if (cityName == "San Francisco") {
+    city='San Francisco';
+    $(".city").css("background-image", "url(pic/sfo.jpg)");
+  } else if (cityName == "New York") {
+    city='New York';
+    $(".city").css("background-image", "url(pic/nyc.jpg)");
+  } else if (cityName == "Chicago") {
+    city='Chicago';
+    $(".city").css("background-image", "url(pic/chi.jpeg)");
+  } else if (cityName == "Los Angeles") {
+    city='Los Angeles';
+    $(".city").css("background-image", "url(pic/la.jpg)");
   }
+  autocomplete(document.getElementById("depart_val"), airport_cities);
+  loadRestaurant();
+  
+   $("#rest").on("click", () => {
+	});
+>>>>>>> 3675d53bb5cea293c403af88f9af7e398c6e34ec
+}
 
 /* loadRestaurant(): when clicked on restaurant buttom (12/10/2018 updated by jie)
 	-- (1) restaurantList(): list restaurants 
 	-- (2) restaurantExpand(): 'click to expand' and 'save to MyTrip' */
-  function loadRestaurant(cityName) {
-    $("#rest").css("background-color", "#c8255b");
-    $("#flight").css("background-color", "#86193d");
-    $('#flight-result').hide();
-    $('#rest-result').show();
-    $('#buttom-b').hide();
-
+function loadRestaurant(cityName) {
+  $("#rest").css("background-color", "#c8255b");
+  $("#flight").css("background-color", "#86193d");
+  $('#flight-result').hide();
+  $('#rest-result').show();
+  $('#buttom-b').hide();
+  
   //try getting entity_id and entity_type from the city
-  $.ajax(zomato_url + 'locations?query=' + cityName,
-  {
+	$.ajax(zomato_url + 'locations?query=' + cityName,
+	{
 		type: "GET", //send it through get method
-    dataType: 'json',
-    xhrFields: {withCredentials: false},
-    headers: {"user-key": zomato_key},
-    success: function(response) {
+        dataType: 'json',
+		xhrFields: {withCredentials: false},
+		headers: {"user-key": zomato_key},
+		success: function(response) {
 			// console.log(response.location_suggestions[0].entity_id);
 			// console.log(response.location_suggestions[0].entity_type);			
 			center_lat = response.location_suggestions[0].latitude;
@@ -252,35 +255,35 @@ function loadHome() {
 			console.log(center_lng);
 			
 			setMapCenterMarker(cityName);
-
+	
 			restaurantDetails(response.location_suggestions[0].entity_id, 
 				response.location_suggestions[0].entity_type);
-
+							
 		},
 		error: (jqxhr, status, error) => {
-      alert(error);
-    }
-
-  }); 
+		    alert(error);
+		}
+		
+	}); 
 }
 
 /* restaurantDetails(): list restaurants  (12/10/2018 updated by jie)*/
 function restaurantDetails(entity_id, entity_type){
-
+  
 	let rlist = $('#rest-result');
 	
 	rlist.append("<button id='rest-nearby'>nearby</button>"
-    + "<button id='rest-best'>best-rated</button>"
-    + "<button id='rest-search'>search</button>"
-    + "<input id='rest-search-val' placeholder='type keyword...(cuisines, etc.)'>"
-    + "<div class = 'container rest-panel' hidden = 'true'></div>"
-    ); 
+				+ "<button id='rest-best'>best-rated</button>"
+				+ "<button id='rest-search'>search</button>"
+				+ "<input id='rest-search-val' placeholder='type keyword...(cuisines, etc.)'>"
+				+ "<div class = 'container rest-panel' hidden = 'true'></div>"
+				); 
 	let rpanel = $('.rest-panel');
 	
 	var rnearby_array, rbest_obj, rsearch;
-
+		
 	$.ajax(zomato_url + "location_details?entity_id=" + entity_id + "&entity_type=" + entity_type,
-  {
+		{
 			type: "GET", //send it through get method
 			dataType: 'json',
 			xhrFields: {withCredentials: false},
@@ -295,7 +298,7 @@ function restaurantDetails(entity_id, entity_type){
 				alert(error);
 			}
 			
-   }); 
+	}); 
 	
 	//list 5 nearby restaurants 
 	$("#rest-nearby").on('click', () => {
@@ -322,7 +325,7 @@ function restaurantDetails(entity_id, entity_type){
 						+ "***PRICE RANGE: "+response.price_range+response.currency
 						+"<br>RATING: "+response.user_rating.rating_text
 						+ " ("+response.user_rating.votes+" votes)</div>"
-           );		
+					);		
 
 					markers.push([response.name, response.location.latitude, response.location.longitude]);
 					
@@ -335,7 +338,7 @@ function restaurantDetails(entity_id, entity_type){
 						+ " ("+response.user_rating.votes+' votes)</p>' 
 						+ '</div>'
 						]);
-
+					  
 				},
 				error: (jqxhr, status, error) => {
 					alert(error);
@@ -348,7 +351,7 @@ function restaurantDetails(entity_id, entity_type){
 		// console.log(infoWindowContent);
 		setTimeout(setMapRestMarkers, 2000);
 		
-	});
+	})
 	
 	//list 5 best-rated restaurants
 	$("#rest-best").on('click', () => {
@@ -375,7 +378,7 @@ function restaurantDetails(entity_id, entity_type){
 						+ "***PRICE RANGE: "+response.price_range+response.currency
 						+"<br>RATING: "+response.user_rating.rating_text
 						+ " ("+response.user_rating.votes+" votes)</div>"
-           );		
+					);		
 
 					markers.push([response.name, response.location.latitude, response.location.longitude]);
 					
@@ -388,7 +391,7 @@ function restaurantDetails(entity_id, entity_type){
 						+ " ("+response.user_rating.votes+' votes)</p>' 
 						+ '</div>'
 						]);
-
+					  
 				},
 				error: (jqxhr, status, error) => {
 					alert(error);
@@ -401,7 +404,7 @@ function restaurantDetails(entity_id, entity_type){
 		// console.log(infoWindowContent);
 		setTimeout(setMapRestMarkers, 2000);
 		
-	});
+	})
 
 	//list 5 choices for given cuisines
 	$("#rest-search").on('click', () => {
@@ -410,7 +413,7 @@ function restaurantDetails(entity_id, entity_type){
 		
 		markers = [];
 		infoWindowContent = [];
-
+			
 		let q=$('#rest-search-val').val();
 		$.ajax(zomato_url + "search?entity_id="+entity_id+"&entity_type="+entity_type+"&q="+q,
 		{	
@@ -424,14 +427,14 @@ function restaurantDetails(entity_id, entity_type){
 				for (let i=0; i< Math.min(5, temp.restaurants.length); i++){
 					
 					response = temp.restaurants[i].restaurant;
-
+				
 					rpanel.append(
 						"<div class='rest-header' id='rid_"+i+"'>"
 						+ "NAME: "+response.name+"***CUISINES: "+ response.cuisines 
 						+ "***PRICE RANGE: "+response.price_range+response.currency
 						+"<br>RATING: "+response.user_rating.rating_text
 						+ " ("+response.user_rating.votes+" votes)</div>"
-           );		
+					);		
 
 					markers.push([response.name, response.location.latitude, response.location.longitude]);
 					
@@ -443,9 +446,9 @@ function restaurantDetails(entity_id, entity_type){
 						+ "<br>RATING: "+response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text
 						+ " ("+response.user_rating.votes+' votes)</p>' 
 						+ '</div>'
-           ]);
+					]);
 				}
-
+				  
 			},
 			error: (jqxhr, status, error) => {
 				alert(error);
@@ -457,7 +460,9 @@ function restaurantDetails(entity_id, entity_type){
 		// console.log(markers);
 		// console.log(infoWindowContent);
 		setTimeout(setMapRestMarkers, 2000);
-	});
+		
+	})
+	
 }
 
 /* attach markers on map for restaurants (12/11/2018) */
@@ -482,29 +487,29 @@ function setMapCenterMarker(cityName){
 
 function setMapRestMarkers(){
 	
-  var bounds = new google.maps.LatLngBounds();
-  var myLatlng = new google.maps.LatLng(center_lat,center_lng);
-  var mapOptions = {
-    zoom: 10,
-    center: myLatlng
-  };
-
+    var bounds = new google.maps.LatLngBounds();
+	var myLatlng = new google.maps.LatLng(center_lat,center_lng);
+    var mapOptions = {
+		zoom: 10,
+		center: myLatlng
+    };
+    
     // Display a map on the page
     map = new google.maps.Map(document.getElementById("map"), mapOptions);
     map.setTilt(45);
-
+     
     // Display multiple markers on a map
     var infoWindow = new google.maps.InfoWindow();
-    var marker;
+	var marker;
     
 	// console.log(markers);
 	// console.log(markers.length);
 	// console.log(infoWindowContent);
     // Loop through our array of markers & place each one on the map  
     for(let i = 0; i < markers.length; i++) {
-
-      setTimeout(function() {
-
+		
+		setTimeout(function() {
+			
 			// console.log(markers[i][1]+" "+markers[i][2]+" "+markers[i][0]);
 			var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
 			bounds.extend(position);
@@ -529,16 +534,17 @@ function setMapRestMarkers(){
 			map.fitBounds(bounds);
 		}, i * 2000);				
     }
-
-    function initMap() {
-  // The map, centered at map_center   
-  map = new google.maps.Map(
-    document.getElementById('map'), 
-    {	zoom: 4, 
-     center: {lat: center_lat, lng: center_lng}
-   });
+    
 }
 
+function initMap() {
+  // The map, centered at map_center   
+  map = new google.maps.Map(
+      document.getElementById('map'), 
+		{	zoom: 4, 
+			center: {lat: center_lat, lng: center_lng}
+		});	
+  
 }
 
 function loadFlight() {
@@ -783,52 +789,52 @@ let SingleTrip = function(airport1, airport2, date1, number1, time11,time12){
 }
 
 
-// autocomplete part
+//-------------------------------------------------------------------auto complete part
 function autocomplete(inp, arr) {
   /*the autocomplete function takes two arguments,
   the text field element and an array of possible autocompleted values:*/
   var currentFocus;
   /*execute a function when someone writes in the text field:*/
   inp.addEventListener("input", function(e) {
-    var a, b, i, val = this.value;
-    /*close any already open lists of autocompleted values*/
-    closeAllLists();
-    if (!val) { return false;}
-    currentFocus = -1;
-    /*create a DIV element that will contain the items (values):*/
-    a = document.createElement("DIV");
-    a.setAttribute("id", this.id + "autocomplete-list");
-    a.setAttribute("class", "autocomplete-items");
-    /*append the DIV element as a child of the autocomplete container:*/
-    this.parentNode.appendChild(a);
-    /*for each item in the array...*/
-    for (i = 0; i < arr.length; i++) {
-      /*check if the item starts with the same letters as the text field value:*/
-      if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-        /*create a DIV element for each matching element:*/
-        b = document.createElement("DIV");
-        /*make the matching letters bold:*/
-        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-        b.innerHTML += arr[i].substr(val.length);
-        /*insert a input field that will hold the current array item's value:*/
-        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-        /*execute a function when someone clicks on the item value (DIV element):*/
-        b.addEventListener("click", function(e) {
-          /*insert the value for the autocomplete text field:*/
-          inp.value = this.getElementsByTagName("input")[0].value;
+      var a, b, i, val = this.value;
+      /*close any already open lists of autocompleted values*/
+      closeAllLists();
+      if (!val) { return false;}
+      currentFocus = -1;
+      /*create a DIV element that will contain the items (values):*/
+      a = document.createElement("DIV");
+      a.setAttribute("id", this.id + "autocomplete-list");
+      a.setAttribute("class", "autocomplete-items");
+      /*append the DIV element as a child of the autocomplete container:*/
+      this.parentNode.appendChild(a);
+      /*for each item in the array...*/
+      for (i = 0; i < arr.length; i++) {
+        /*check if the item starts with the same letters as the text field value:*/
+        if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+          /*create a DIV element for each matching element:*/
+          b = document.createElement("DIV");
+          /*make the matching letters bold:*/
+          b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+          b.innerHTML += arr[i].substr(val.length);
+          /*insert a input field that will hold the current array item's value:*/
+          b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+          /*execute a function when someone clicks on the item value (DIV element):*/
+              b.addEventListener("click", function(e) {
+              /*insert the value for the autocomplete text field:*/
+              inp.value = this.getElementsByTagName("input")[0].value;
               /*close the list of autocompleted values,
               (or any other open lists of autocompleted values:*/
               closeAllLists();
-            });
-        a.appendChild(b);
+          });
+          a.appendChild(b);
+        }
       }
-    }
   });
   /*execute a function presses a key on the keyboard:*/
   inp.addEventListener("keydown", function(e) {
-    var x = document.getElementById(this.id + "autocomplete-list");
-    if (x) x = x.getElementsByTagName("div");
-    if (e.keyCode == 40) {
+      var x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+      if (e.keyCode == 40) {
         /*If the arrow DOWN key is pressed,
         increase the currentFocus variable:*/
         currentFocus++;
@@ -848,7 +854,7 @@ function autocomplete(inp, arr) {
           if (x) x[currentFocus].click();
         }
       }
-    });
+  });
   function addActive(x) {
     /*a function to classify an item as "active":*/
     if (!x) return false;
@@ -871,14 +877,12 @@ function autocomplete(inp, arr) {
     var x = document.getElementsByClassName("autocomplete-items");
     for (var i = 0; i < x.length; i++) {
       if (elmnt != x[i] && elmnt != inp) {
-        x[i].parentNode.removeChild(x[i]);
-      }
+      x[i].parentNode.removeChild(x[i]);
     }
   }
-  /*execute a function when someone clicks in the document:*/
-  document.addEventListener("click", function (e) {
-    closeAllLists(e.target);
-  });
 }
-
-
+/*execute a function when someone clicks in the document:*/
+document.addEventListener("click", function (e) {
+    closeAllLists(e.target);
+});
+}
