@@ -8,10 +8,8 @@ let trips = [];
 let date1,date2='';
 
 /* Apply zomato API and impliment loadMyTip() and loadRestaurant() functions (12/10/2018 updated by jie)*/
-var zomato = require('zomato');
-var client = zomato.createClient({
-  userKey: '2ee136670cff3a1bd2e4a6d8427f1e36', //as obtained from [Zomato API](https://developers.zomato.com/apis)
-});
+var zomato_url = "https://developers.zomato.com/api/v2.1/";
+var zomato_key = "2ee136670cff3a1bd2e4a6d8427f1e36"; //as obtained from [Zomato API](https://developers.zomato.com/apis)
 
 $(document).ready(() => {
   getAirports();
@@ -62,9 +60,10 @@ $(document).ready(() => {
     loadMyTrip();
   });
 
-  $("#rest").on("click", () => {
+// FUCNTION moved to loadCity() (12/10/2018 -jie)
+ /*  $("#rest").on("click", () => {
     loadRestaurant();
-  });
+  }); */
 
   $("#flight").on("click", () => {
     loadFlight();
@@ -82,9 +81,9 @@ $(document).ready(() => {
       let trip= new SingleTrip(flight.attr('airport1'),flight.attr('airport2'),date1,flight.attr('number'),$(flight.children('.date1')[0]).html(),$(flight.children('.date2')[0]).html());
       
     }
-    // console.log(trip);
+    console.log(trip);
 
-    // loadMyTrip();
+    //TODO: loadMyTrip();
   });
 
 
@@ -214,21 +213,101 @@ function loadCity(cityName) {
     city='Los Angeles';
     $(".city").css("background-image", "url(pic/la.jpg)");
   }
-  loadRestaurant();
-
+  
+   $("#rest").on("click", () => {
+	   loadRestaurant(cityName);
+	});
 }
 
 /* loadRestaurant(): when clicked on restaurant buttom (12/10/2018 updated by jie)
-	-- (1) list restaurants 
-	-- (2) enable 'click to expand' and 'save to MyTrip' */
-function loadRestaurant() {
+	-- (1) restaurantList(): list restaurants 
+	-- (2) restaurantExpand(): 'click to expand' and 'save to MyTrip' */
+function loadRestaurant(cityName) {
   $("#rest").css("background-color", "#c8255b");
   $("#flight").css("background-color", "#86193d");
   $('#flight-result').hide();
   $('#rest-result').show();
   $('#buttom-b').hide();
   
+  //try getting entity_id and entity_type from the city
+	$.ajax(zomato_url + 'locations?query=' + cityName,
+	{
+		type: "GET", //send it through get method
+        dataType: 'json',
+		xhrFields: {withCredentials: false},
+		headers: {"user-key": zomato_key},
+		success: function(response) {
+			// console.log(response.location_suggestions[0].entity_id);
+			// console.log(response.location_suggestions[0].entity_type);
+			
+			restaurantDetails(response.location_suggestions[0].entity_id, 
+				response.location_suggestions[0].entity_type);
+		},
+		error: (jqxhr, status, error) => {
+		    alert(error);
+		}
+		
+	}); 
+}
+
+/* restaurantDetails(): list restaurants  (12/10/2018 updated by jie)*/
+function restaurantDetails(entity_id, entity_type){
   
+	let rlist = $('#rest-result');
+	
+	rlist.append("<button id='rest-nearby'>nearby</button>"
+				+ "<button id='rest-best'>best-rated</button>"
+				+ "<button id='rest-search'>personal search</button>"
+				+ "<div class = 'container rest-panel'></div>"); 
+	
+	let rpanel = $('.rest-panel');
+	
+	var rnearby_array, rbest_obj, rsearch;
+	
+	$.ajax(zomato_url + "location_details?entity_id=" + entity_id + "&entity_type=" + entity_type,
+		{
+			type: "GET", //send it through get method
+			dataType: 'json',
+			xhrFields: {withCredentials: false},
+			headers: {"user-key": zomato_key},
+			success: function(response) {
+				
+				rnearby_array = response.nearby_res;
+				rbest_obj = response.best_rated_restaurant;
+				
+			},
+			error: (jqxhr, status, error) => {
+				alert(error);
+			}
+			
+	}); 
+	
+	//list 5 nearby restaurants 
+	$("#rest-nearby").on('click', () => {
+		rpanel.empty();
+		
+		for (let i=0; i<Math.min(5, rnearby_array.length); i++){
+			// rpanel.append();
+			$.ajax(zomato_url + "restaurant?res_id=" + rnearby_array[i],
+			{	
+				type: "GET", //send it through get method
+				dataType: 'json',
+				xhrFields: {withCredentials: false},
+				headers: {"user-key": zomato_key},
+				success: function(response) {
+					
+					
+				},
+				error: (jqxhr, status, error) => {
+					alert(error);
+				}
+			}); 
+			
+		}
+	})
+	
+	
+	
 }
 
 function loadFlight() {

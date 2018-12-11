@@ -272,3 +272,12 @@ input {
   background-color:#c8255b;
   width:4em !important;
 }
+
+/* TODO: style for restaurant */
+.rest-panel{
+    overflow:scroll;
+	width: 600px;
+	height: 500px;
+	margin-left: 30%;
+	padding: 25px;
+}
