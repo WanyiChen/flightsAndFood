@@ -14,6 +14,7 @@ var zomato_key = "2ee136670cff3a1bd2e4a6d8427f1e36"; //as obtained from [Zomato 
 var map;
 var center_lat = 38.889931
 var center_lng = 77.009003;
+var markers, infoWindowContent
 
 $(document).ready(() => {
   getAirports();
@@ -268,13 +269,14 @@ function restaurantDetails(entity_id, entity_type){
 	
 	rlist.append("<button id='rest-nearby'>nearby</button>"
 				+ "<button id='rest-best'>best-rated</button>"
-				+ "<button id='rest-search'>personal search</button>"
-				+ "<div class = 'container rest-panel'></div>"
+				+ "<button id='rest-search'>search</button>"
+				+ "<input id='rest-search-val' placeholder='type keyword...(cuisines, etc.)'>"
+				+ "<div class = 'container rest-panel' hidden = 'true'></div>"
 				); 
 	let rpanel = $('.rest-panel');
 	
 	var rnearby_array, rbest_obj, rsearch;
-	
+		
 	$.ajax(zomato_url + "location_details?entity_id=" + entity_id + "&entity_type=" + entity_type,
 		{
 			type: "GET", //send it through get method
@@ -284,7 +286,7 @@ function restaurantDetails(entity_id, entity_type){
 			success: function(response) {
 				
 				rnearby_array = response.nearby_res;
-				rbest_obj = response.best_rated_restaurant;
+				rbest_objs = response.best_rated_restaurant;
 				
 			},
 			error: (jqxhr, status, error) => {
@@ -296,7 +298,11 @@ function restaurantDetails(entity_id, entity_type){
 	//list 5 nearby restaurants 
 	$("#rest-nearby").on('click', () => {
 		rpanel.empty();
-				
+		rpanel.show();   
+		
+		markers = [];
+		infoWindowContent = [];
+		
 		for (let i=0; i<Math.min(5, rnearby_array.length); i++){
 			
 			$.ajax(zomato_url + "restaurant?res_id=" + rnearby_array[i],
@@ -306,16 +312,28 @@ function restaurantDetails(entity_id, entity_type){
 				xhrFields: {withCredentials: false},
 				headers: {"user-key": zomato_key},
 				success: function(response) {
-					//TODO: toggle to show map; infor = name, cuise, price, url, rate; + = add to mytrip;
-					console.log("resaurant@");
+					//show map; infor = name, cuise, price, url, rate; + = add to mytrip;
+					
 					rpanel.append(
 						"<div class='rest-header' id='rid_"+i+"'>"
 						+ "NAME: "+response.name+"***CUISINES: "+ response.cuisines 
 						+ "***PRICE RANGE: "+response.price_range+response.currency
 						+"<br>RATING: "+response.user_rating.rating_text
 						+ " ("+response.user_rating.votes+" votes)</div>"
-					);				
+					);		
+
+					markers.push([response.name, response.location.latitude, response.location.longitude]);
 					
+					infoWindowContent.push(
+						['<div class="info_content">' 
+						+ '<h3>'+response.name+'</h3>' 
+						+ '<p>CUISINES: '+ response.cuisines 
+						+ "<br>PRICE RANGE: "+response.price_range+response.currency
+						+ "<br>RATING: "+response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text
+						+ " ("+response.user_rating.votes+' votes)</p>' 
+						+ '</div>'
+						]);
+					  
 				},
 				error: (jqxhr, status, error) => {
 					alert(error);
@@ -324,12 +342,125 @@ function restaurantDetails(entity_id, entity_type){
 
 		}
 		
+		// console.log(markers);
+		// console.log(infoWindowContent);
+		setTimeout(setMapRestMarkers, 2000);
 		
+	})
+	
+	//list 5 best-rated restaurants
+	$("#rest-best").on('click', () => {
+		rpanel.empty();
+		rpanel.show();   
+		
+		markers = [];
+		infoWindowContent = [];
+		
+		for (let i=0; i<Math.min(5, rnearby_array.length); i++){
+			
+			$.ajax(zomato_url + "restaurant?res_id=" + rbest_objs[i].restaurant.R.res_id,
+			{	
+				type: "GET", //send it through get method
+				dataType: 'json',
+				xhrFields: {withCredentials: false},
+				headers: {"user-key": zomato_key},
+				success: function(response) {
+					//show map; infor = name, cuise, price, rate; + = add to mytrip;
+					
+					rpanel.append(
+						"<div class='rest-header' id='rid_"+i+"'>"
+						+ "NAME: "+response.name+"***CUISINES: "+ response.cuisines 
+						+ "***PRICE RANGE: "+response.price_range+response.currency
+						+"<br>RATING: "+response.user_rating.rating_text
+						+ " ("+response.user_rating.votes+" votes)</div>"
+					);		
+
+					markers.push([response.name, response.location.latitude, response.location.longitude]);
+					
+					infoWindowContent.push(
+						['<div class="info_content">' 
+						+ '<h3>'+response.name+'</h3>' 
+						+ '<p>CUISINES: '+ response.cuisines 
+						+ "<br>PRICE RANGE: "+response.price_range+response.currency
+						+ "<br>RATING: "+response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text
+						+ " ("+response.user_rating.votes+' votes)</p>' 
+						+ '</div>'
+						]);
+					  
+				},
+				error: (jqxhr, status, error) => {
+					alert(error);
+				}
+			});
+
+		}
+		
+		// console.log(markers);
+		// console.log(infoWindowContent);
+		setTimeout(setMapRestMarkers, 2000);
+		
+	})
+
+	//list 5 choices for given cuisines
+	$("#rest-search").on('click', () => {
+		rpanel.empty();
+		rpanel.show();   
+		
+		markers = [];
+		infoWindowContent = [];
+			
+		let q=$('#rest-search-val').val();
+		$.ajax(zomato_url + "search?entity_id="+entity_id+"&entity_type="+entity_type+"&q="+q,
+		{	
+			type: "GET", //send it through get method
+			dataType: 'json',
+			xhrFields: {withCredentials: false},
+			headers: {"user-key": zomato_key},
+			success: function(response) {
+				//show map; infor = name, cuise, price, rate; + = add to mytrip;
+				let temp = response;
+				for (let i=0; i< Math.min(5, temp.restaurants.length); i++){
+					
+					response = temp.restaurants[i].restaurant;
+				
+					rpanel.append(
+						"<div class='rest-header' id='rid_"+i+"'>"
+						+ "NAME: "+response.name+"***CUISINES: "+ response.cuisines 
+						+ "***PRICE RANGE: "+response.price_range+response.currency
+						+"<br>RATING: "+response.user_rating.rating_text
+						+ " ("+response.user_rating.votes+" votes)</div>"
+					);		
+
+					markers.push([response.name, response.location.latitude, response.location.longitude]);
+					
+					infoWindowContent.push(
+						['<div class="info_content">' 
+						+ '<h3>'+response.name+'</h3>' 
+						+ '<p>CUISINES: '+ response.cuisines 
+						+ "<br>PRICE RANGE: "+response.price_range+response.currency
+						+ "<br>RATING: "+response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text
+						+ " ("+response.user_rating.votes+' votes)</p>' 
+						+ '</div>'
+					]);
+				}
+				  
+			},
+			error: (jqxhr, status, error) => {
+				alert(error);
+			}
+		});
+
+		
+		
+		// console.log(markers);
+		// console.log(infoWindowContent);
+		setTimeout(setMapRestMarkers, 2000);
 		
 	})
 	
 }
 
+/* attach markers on map for restaurants (12/11/2018) */
 function setMapCenterMarker(cityName){
 	
 	var myLatlng = new google.maps.LatLng(center_lat,center_lng);
@@ -337,7 +468,7 @@ function setMapCenterMarker(cityName){
 		zoom: 4,
 		center: myLatlng
 	}
-	// var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+	map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
 	var marker = new google.maps.Marker({
 		position: myLatlng,
@@ -347,6 +478,58 @@ function setMapCenterMarker(cityName){
 	// To add the marker to the map, call setMap();
 	marker.setMap(map);
 	
+}
+
+function setMapRestMarkers(){
+	
+    var bounds = new google.maps.LatLngBounds();
+	var myLatlng = new google.maps.LatLng(center_lat,center_lng);
+    var mapOptions = {
+		zoom: 10,
+		center: myLatlng
+    };
+    
+    // Display a map on the page
+    map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    map.setTilt(45);
+     
+    // Display multiple markers on a map
+    var infoWindow = new google.maps.InfoWindow();
+	var marker;
+    
+	// console.log(markers);
+	// console.log(markers.length);
+	// console.log(infoWindowContent);
+    // Loop through our array of markers & place each one on the map  
+    for(let i = 0; i < markers.length; i++) {
+		
+		setTimeout(function() {
+			
+			// console.log(markers[i][1]+" "+markers[i][2]+" "+markers[i][0]);
+			var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+			bounds.extend(position);
+			marker = new google.maps.Marker({
+				position: position,
+				map: map,
+				animation: google.maps.Animation.DROP,
+				title: markers[i][0]
+			});		
+			
+			marker.setMap(map);
+			
+			// Allow each marker to have an info window    
+			google.maps.event.addListener(marker, 'click', (function(marker, i) {
+				return function() {
+					infoWindow.setContent(infoWindowContent[i][0]);
+					infoWindow.open(map, marker);
+				}
+			})(marker, i));
+			
+			// Automatically center the map fitting all markers on the screen
+			map.fitBounds(bounds);
+		}, i * 2000);				
+    }
+    
 }
 
 function initMap() {
