@@ -11,6 +11,10 @@ let date1,date2='';
 var zomato_url = "https://developers.zomato.com/api/v2.1/";
 var zomato_key = "2ee136670cff3a1bd2e4a6d8427f1e36"; //as obtained from [Zomato API](https://developers.zomato.com/apis)
 
+var map;
+var center_lat = 38.889931
+var center_lng = 77.009003;
+
 $(document).ready(() => {
   getAirports();
   $("#login").on("click", () => {
@@ -69,7 +73,7 @@ $(document).ready(() => {
     loadFlight();
   });
 
-  $('#create').on('click',(e)=>{
+	$('#create').on('click',(e)=>{
     let target=$(e.target);
     if(trip_type=='round trip'){
       let flight1=$($('#selected1').parents('.flight')[0]);
@@ -83,10 +87,10 @@ $(document).ready(() => {
     }
     console.log(trip);
 
-    //TODO: loadMyTrip();
+    //TODO: loadMyTrip(); 
   });
-
-
+  
+  
   $('input[type=radio][name=flight]').change(function() {
     $('#flight2').hide();
     $('#flight1').show();
@@ -238,10 +242,17 @@ function loadRestaurant(cityName) {
 		headers: {"user-key": zomato_key},
 		success: function(response) {
 			// console.log(response.location_suggestions[0].entity_id);
-			// console.log(response.location_suggestions[0].entity_type);
+			// console.log(response.location_suggestions[0].entity_type);			
+			center_lat = response.location_suggestions[0].latitude;
+			center_lng = response.location_suggestions[0].longitude;
+			console.log(center_lat);
+			console.log(center_lng);
 			
+			setMapCenterMarker(cityName);
+	
 			restaurantDetails(response.location_suggestions[0].entity_id, 
 				response.location_suggestions[0].entity_type);
+							
 		},
 		error: (jqxhr, status, error) => {
 		    alert(error);
@@ -258,8 +269,8 @@ function restaurantDetails(entity_id, entity_type){
 	rlist.append("<button id='rest-nearby'>nearby</button>"
 				+ "<button id='rest-best'>best-rated</button>"
 				+ "<button id='rest-search'>personal search</button>"
-				+ "<div class = 'container rest-panel'></div>"); 
-	
+				+ "<div class = 'container rest-panel'></div>"
+				); 
 	let rpanel = $('.rest-panel');
 	
 	var rnearby_array, rbest_obj, rsearch;
@@ -285,9 +296,9 @@ function restaurantDetails(entity_id, entity_type){
 	//list 5 nearby restaurants 
 	$("#rest-nearby").on('click', () => {
 		rpanel.empty();
-		
+				
 		for (let i=0; i<Math.min(5, rnearby_array.length); i++){
-			// rpanel.append();
+			
 			$.ajax(zomato_url + "restaurant?res_id=" + rnearby_array[i],
 			{	
 				type: "GET", //send it through get method
@@ -295,19 +306,57 @@ function restaurantDetails(entity_id, entity_type){
 				xhrFields: {withCredentials: false},
 				headers: {"user-key": zomato_key},
 				success: function(response) {
-					
+					//TODO: toggle to show map; infor = name, cuise, price, url, rate; + = add to mytrip;
+					console.log("resaurant@");
+					rpanel.append(
+						"<div class='rest-header' id='rid_"+i+"'>"
+						+ "NAME: "+response.name+"***CUISINES: "+ response.cuisines 
+						+ "***PRICE RANGE: "+response.price_range+response.currency
+						+"<br>RATING: "+response.user_rating.rating_text
+						+ " ("+response.user_rating.votes+" votes)</div>"
+					);				
 					
 				},
 				error: (jqxhr, status, error) => {
 					alert(error);
 				}
-			}); 
-			
+			});
+
 		}
+		
+		
+		
 	})
 	
+}
+
+function setMapCenterMarker(cityName){
 	
+	var myLatlng = new google.maps.LatLng(center_lat,center_lng);
+	var mapOptions = {
+		zoom: 4,
+		center: myLatlng
+	}
+	// var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+	var marker = new google.maps.Marker({
+		position: myLatlng,
+		title: cityName
+	});
+
+	// To add the marker to the map, call setMap();
+	marker.setMap(map);
 	
+}
+
+function initMap() {
+  // The map, centered at map_center   
+  map = new google.maps.Map(
+      document.getElementById('map'), 
+		{	zoom: 4, 
+			center: {lat: center_lat, lng: center_lng}
+		});	
+  
 }
 
 function loadFlight() {

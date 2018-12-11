@@ -6,6 +6,10 @@
   <link rel="stylesheet" href="style.css" media="screen" />
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
   <script src="script.js"></script>
+  <!-- enabling googlemap api -->
+  <script async defer
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqMppihJId9-sU0NzLa-apCcp9DoI3Lck&callback=initMap">
+  </script>
   <meta charset="UTF-8">
 </head>
 
@@ -91,7 +95,7 @@
       <button id="rest">Restaurant</button>
       <button id="flight">Flight: Departure</button>
       <div id="result">
-        <div id="rest-result"></div>
+        <div id="rest-result"><div id='map'><div></div>
         <div id="flight-result" hidden="true">
           <div id='flight1' hidden="true"></div>
           <div id='flight2' hidden="true"></div>

@@ -274,10 +274,30 @@ input {
 }
 
 /* TODO: style for restaurant */
+#rest-nearby, #rest-nearby, #rest-nearby, .map-button{ 
+/* !!!!!!!!!!: DON KNOW WHY THIS DOES NOT WORK */
+	float: left;
+	padding: 10px;
+}
+
 .rest-panel{
-    overflow:scroll;
-	width: 600px;
-	height: 500px;
-	margin-left: 30%;
+	width: 560px;
+	height: 800px;
+	margin-left: 0%;
 	padding: 25px;
 }
+.rest-header{
+	padding: 10px;
+	background-color: #ffe4b2;
+	border-bottom: 2px solid;
+    box-shadow: 1px 2px 4px;
+	margin-top: 2%;
+    border-radius: 3px;
+}
+
+/* Set the size of the div element that contains the map */
+#map {
+	height: 250px;  
+	width: 600px;
+	margin-top: 1%;
+ }
