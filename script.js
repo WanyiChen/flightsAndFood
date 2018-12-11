@@ -1,17 +1,20 @@
 let root_url = "http://comp426.cs.unc.edu:3001/";
 let city = '';
 let trip_type = "round trip";
-let airport_names = [];
+let airport_cities = [];
 let airport_codes = [];
 let select1, select2 = ''; //selected to and return flights
 let trips = [];
 let date1, date2 = '';
 
 /* Apply zomato API and impliment loadMyTip() and loadRestaurant() functions (12/10/2018 updated by jie)*/
-//var zomato = require('zomato');
-//var client = zomato.createClient({
-//userKey: '2ee136670cff3a1bd2e4a6d8427f1e36', //as obtained from [Zomato API](https://developers.zomato.com/apis)
-//});
+var zomato_url = "https://developers.zomato.com/api/v2.1/";
+var zomato_key = "2ee136670cff3a1bd2e4a6d8427f1e36"; //as obtained from [Zomato API](https://developers.zomato.com/apis)
+
+var map;
+var center_lat = 38.889931
+var center_lng = 77.009003;
+var markers, infoWindowContent
 
 $(document).ready(() => {
   getAirports();
@@ -62,29 +65,32 @@ $(document).ready(() => {
     loadMyTrip();
   });
 
-  $("#rest").on("click", () => {
+  // FUCNTION moved to loadCity() (12/10/2018 -jie)
+  /*  $("#rest").on("click", () => {
     loadRestaurant();
-  });
+  }); */
 
   $("#flight").on("click", () => {
     loadFlight();
   });
 
+
   $('#create').on('click', (e) => {
+    let trip = '';
     let target = $(e.target);
     if (trip_type == 'round trip') {
       let flight1 = $($('#selected1').parents('.flight')[0]);
       let flight2 = $($('#selected2').parents('.flight')[0]);
-      let trip = new RoundTrip(flight1.attr('airport1'), flight1.attr('airport2'), date1, date2, flight1.attr('number'), flight2.attr('number'), $(flight1.children('.date1')[0]).html(), $(flight1.children('.date2')[0]).html(), $(flight2.children('.date1')[0]).html(), $(flight2.children('.date2')[0]).html());
-
+      trip = new RoundTrip(flight1.attr('airport1'), flight1.attr('airport2'), date1, date2, flight1.attr('number'), flight2.attr('number'), $(flight1.children('.date1')[0]).html(), $(flight1.children('.date2')[0]).html(), $(flight2.children('.date1')[0]).html(), $(flight2.children('.date2')[0]).html());
     } else {
       let flight = $($('#selected1').parents('.flight')[0]);
-      let trip = new SingleTrip(flight.attr('airport1'), flight.attr('airport2'), date1, flight.attr('number'), $(flight.children('.date1')[0]).html(), $(flight.children('.date2')[0]).html());
-
+      trip = new SingleTrip(flight.attr('airport1'), flight.attr('airport2'), date1, flight.attr('number'), $(flight.children('.date1')[0]).html(), $(flight.children('.date2')[0]).html());
     }
-    // console.log(trip);
 
-    // loadMyTrip();
+    trips.push(trip);
+    console.log(trip);
+    console.log(trips);
+    loadMyTrip();
   });
 
 
@@ -120,6 +126,7 @@ $(document).ready(() => {
     $('#buttom-b').children().each(function() {
       $(this).hide();
     });
+    $('#flight2').html('');
     findFlight(1);
   });
 
@@ -163,21 +170,23 @@ $(document).ready(() => {
           $('#create').show();
         }
         $('#selected1').html('Select');
+        $('#selected1').parent().css("background-color", "#fbf9f1");
         $('#selected1').removeAttr('id');
         target.html('Selected');
         target.attr('id', 'selected1');
-        target.parent().css("background-color", "#9a93c2");
+        target.parent().css("background-color", "#bcbaba");
       } else {
         select2 = target;
         $('#create').show();
         $('#selected2').html('Select');
+        $('#selected2').parent().css("background-color", "#fbf9f1");
         $('#selected2').removeAttr('id');
         target.html('Selected');
         target.attr('id', 'selected2');
+        target.parent().css("background-color", "#bcbaba");
       }
     }
   });
-
 });
 
 function loadHome() {
@@ -214,26 +223,353 @@ function loadCity(cityName) {
     city = 'Los Angeles';
     $(".city").css("background-image", "url(pic/la.jpg)");
   }
-  loadRestaurant();
+  autocomplete(document.getElementById("depart_val"), airport_cities);
+
+  $("#rest").on("click", () => {
+    loadRestaurant(cityName);
+  });
 
 }
 
 /* loadRestaurant(): when clicked on restaurant buttom (12/10/2018 updated by jie)
-	-- (1) list restaurants
-	-- (2) enable 'click to expand' and 'save to MyTrip' */
-function loadRestaurant() {
-  $("#rest").css("background-color", "#9a93c2");
-  $("#flight").css("background-color", "#352b71");
+	-- (1) restaurantList(): list restaurants
+	-- (2) restaurantExpand(): 'click to expand' and 'save to MyTrip' */
+function loadRestaurant(cityName) {
+  $("#rest").css("background-color", "#c8255b");
+  $("#flight").css("background-color", "#86193d");
   $('#flight-result').hide();
   $('#rest-result').show();
   $('#buttom-b').hide();
 
+  //try getting entity_id and entity_type from the city
+  $.ajax(zomato_url + 'locations?query=' + cityName, {
+    type: "GET", //send it through get method
+    dataType: 'json',
+    xhrFields: {
+      withCredentials: false
+    },
+    headers: {
+      "user-key": zomato_key
+    },
+    success: function(response) {
+      // console.log(response.location_suggestions[0].entity_id);
+      // console.log(response.location_suggestions[0].entity_type);
+      center_lat = response.location_suggestions[0].latitude;
+      center_lng = response.location_suggestions[0].longitude;
+      console.log(center_lat);
+      console.log(center_lng);
+
+      setMapCenterMarker(cityName);
+
+      restaurantDetails(response.location_suggestions[0].entity_id,
+        response.location_suggestions[0].entity_type);
+
+    },
+    error: (jqxhr, status, error) => {
+      alert(error);
+    }
+
+  });
+}
+
+/* restaurantDetails(): list restaurants  (12/10/2018 updated by jie)*/
+function restaurantDetails(entity_id, entity_type) {
+
+  let rlist = $('#rest-result');
+
+  rlist.append("<button id='rest-nearby'>nearby</button>" +
+    "<button id='rest-best'>best-rated</button>" +
+    "<button id='rest-search'>search</button>" +
+    "<input id='rest-search-val' placeholder='type keyword...(cuisines, etc.)'>" +
+    "<div class = 'container rest-panel' hidden = 'true'></div>"
+  );
+  let rpanel = $('.rest-panel');
+
+  var rnearby_array, rbest_obj, rsearch;
+
+  $.ajax(zomato_url + "location_details?entity_id=" + entity_id + "&entity_type=" + entity_type, {
+    type: "GET", //send it through get method
+    dataType: 'json',
+    xhrFields: {
+      withCredentials: false
+    },
+    headers: {
+      "user-key": zomato_key
+    },
+    success: function(response) {
+
+      rnearby_array = response.nearby_res;
+      rbest_objs = response.best_rated_restaurant;
+
+    },
+    error: (jqxhr, status, error) => {
+      alert(error);
+    }
+
+  });
+
+  //list 5 nearby restaurants
+  $("#rest-nearby").on('click', () => {
+    rpanel.empty();
+    rpanel.show();
+
+    markers = [];
+    infoWindowContent = [];
+
+    for (let i = 0; i < Math.min(5, rnearby_array.length); i++) {
+
+      $.ajax(zomato_url + "restaurant?res_id=" + rnearby_array[i], {
+        type: "GET", //send it through get method
+        dataType: 'json',
+        xhrFields: {
+          withCredentials: false
+        },
+        headers: {
+          "user-key": zomato_key
+        },
+        success: function(response) {
+          //show map; infor = name, cuise, price, url, rate; + = add to mytrip;
+
+          rpanel.append(
+            "<div class='rest-header' id='rid_" + i + "'>" +
+            "NAME: " + response.name + "***CUISINES: " + response.cuisines +
+            "***PRICE RANGE: " + response.price_range + response.currency +
+            "<br>RATING: " + response.user_rating.rating_text +
+            " (" + response.user_rating.votes + " votes)</div>"
+          );
+
+          markers.push([response.name, response.location.latitude, response.location.longitude]);
+
+          infoWindowContent.push(
+            ['<div class="info_content">' +
+              '<h3>' + response.name + '</h3>' +
+              '<p>CUISINES: ' + response.cuisines +
+              "<br>PRICE RANGE: " + response.price_range + response.currency +
+              "<br>RATING: " + response.user_rating.aggregate_rating + " - " + response.user_rating.rating_text +
+              " (" + response.user_rating.votes + ' votes)</p>' +
+              '</div>'
+            ]);
+
+        },
+        error: (jqxhr, status, error) => {
+          alert(error);
+        }
+      });
+
+    }
+
+    // console.log(markers);
+    // console.log(infoWindowContent);
+    setTimeout(setMapRestMarkers, 2000);
+
+  });
+
+  //list 5 best-rated restaurants
+  $("#rest-best").on('click', () => {
+    rpanel.empty();
+    rpanel.show();
+
+    markers = [];
+    infoWindowContent = [];
+
+    for (let i = 0; i < Math.min(5, rnearby_array.length); i++) {
+
+      $.ajax(zomato_url + "restaurant?res_id=" + rbest_objs[i].restaurant.R.res_id, {
+        type: "GET", //send it through get method
+        dataType: 'json',
+        xhrFields: {
+          withCredentials: false
+        },
+        headers: {
+          "user-key": zomato_key
+        },
+        success: function(response) {
+          //show map; infor = name, cuise, price, rate; + = add to mytrip;
+
+          rpanel.append(
+            "<div class='rest-header' id='rid_" + i + "'>" +
+            "NAME: " + response.name + "***CUISINES: " + response.cuisines +
+            "***PRICE RANGE: " + response.price_range + response.currency +
+            "<br>RATING: " + response.user_rating.rating_text +
+            " (" + response.user_rating.votes + " votes)</div>"
+          );
+
+          markers.push([response.name, response.location.latitude, response.location.longitude]);
+
+          infoWindowContent.push(
+            ['<div class="info_content">' +
+              '<h3>' + response.name + '</h3>' +
+              '<p>CUISINES: ' + response.cuisines +
+              "<br>PRICE RANGE: " + response.price_range + response.currency +
+              "<br>RATING: " + response.user_rating.aggregate_rating + " - " + response.user_rating.rating_text +
+              " (" + response.user_rating.votes + ' votes)</p>' +
+              '</div>'
+            ]);
+
+        },
+        error: (jqxhr, status, error) => {
+          alert(error);
+        }
+      });
+
+    }
+
+    // console.log(markers);
+    // console.log(infoWindowContent);
+    setTimeout(setMapRestMarkers, 2000);
+
+  })
+
+  //list 5 choices for given cuisines
+  $("#rest-search").on('click', () => {
+    rpanel.empty();
+    rpanel.show();
+
+    markers = [];
+    infoWindowContent = [];
+
+    let q = $('#rest-search-val').val();
+    $.ajax(zomato_url + "search?entity_id=" + entity_id + "&entity_type=" + entity_type + "&q=" + q, {
+      type: "GET", //send it through get method
+      dataType: 'json',
+      xhrFields: {
+        withCredentials: false
+      },
+      headers: {
+        "user-key": zomato_key
+      },
+      success: function(response) {
+        //show map; infor = name, cuise, price, rate; + = add to mytrip;
+        let temp = response;
+        for (let i = 0; i < Math.min(5, temp.restaurants.length); i++) {
+
+          response = temp.restaurants[i].restaurant;
+
+          rpanel.append(
+            "<div class='rest-header' id='rid_" + i + "'>" +
+            "NAME: " + response.name + "***CUISINES: " + response.cuisines +
+            "***PRICE RANGE: " + response.price_range + response.currency +
+            "<br>RATING: " + response.user_rating.rating_text +
+            " (" + response.user_rating.votes + " votes)</div>"
+          );
+
+          markers.push([response.name, response.location.latitude, response.location.longitude]);
+
+          infoWindowContent.push(
+            ['<div class="info_content">' +
+              '<h3>' + response.name + '</h3>' +
+              '<p>CUISINES: ' + response.cuisines +
+              "<br>PRICE RANGE: " + response.price_range + response.currency +
+              "<br>RATING: " + response.user_rating.aggregate_rating + " - " + response.user_rating.rating_text +
+              " (" + response.user_rating.votes + ' votes)</p>' +
+              '</div>'
+            ]);
+        }
+
+      },
+      error: (jqxhr, status, error) => {
+        alert(error);
+      }
+    });
+
+
+
+    // console.log(markers);
+    // console.log(infoWindowContent);
+    setTimeout(setMapRestMarkers, 2000);
+
+  })
+
+}
+
+/* attach markers on map for restaurants (12/11/2018) */
+function setMapCenterMarker(cityName) {
+
+  var myLatlng = new google.maps.LatLng(center_lat, center_lng);
+  var mapOptions = {
+    zoom: 4,
+    center: myLatlng
+  }
+  map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+  var marker = new google.maps.Marker({
+    position: myLatlng,
+    title: cityName
+  });
+
+  // To add the marker to the map, call setMap();
+  marker.setMap(map);
+
+}
+
+function setMapRestMarkers() {
+
+  var bounds = new google.maps.LatLngBounds();
+  var myLatlng = new google.maps.LatLng(center_lat, center_lng);
+  var mapOptions = {
+    zoom: 10,
+    center: myLatlng
+  };
+
+  // Display a map on the page
+  map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  map.setTilt(45);
+
+  // Display multiple markers on a map
+  var infoWindow = new google.maps.InfoWindow();
+  var marker;
+
+  // console.log(markers);
+  // console.log(markers.length);
+  // console.log(infoWindowContent);
+  // Loop through our array of markers & place each one on the map
+  for (let i = 0; i < markers.length; i++) {
+
+    setTimeout(function() {
+
+      // console.log(markers[i][1]+" "+markers[i][2]+" "+markers[i][0]);
+      var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+      bounds.extend(position);
+      marker = new google.maps.Marker({
+        position: position,
+        map: map,
+        animation: google.maps.Animation.DROP,
+        title: markers[i][0]
+      });
+
+      marker.setMap(map);
+
+      // Allow each marker to have an info window
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infoWindow.setContent(infoWindowContent[i][0]);
+          infoWindow.open(map, marker);
+        }
+      })(marker, i));
+
+      // Automatically center the map fitting all markers on the screen
+      map.fitBounds(bounds);
+    }, i * 2000);
+  }
+
+}
+
+function initMap() {
+  // The map, centered at map_center
+  map = new google.maps.Map(
+    document.getElementById('map'), {
+      zoom: 4,
+      center: {
+        lat: center_lat,
+        lng: center_lng
+      }
+    });
 
 }
 
 function loadFlight() {
-  $("#rest").css("background-color", "#352b71");
-  $("#flight").css("background-color", "#9a93c2");
+  $("#rest").css("background-color", "#86193d");
+  $("#flight").css("background-color", "#c8255b");
   $('#flight-result').show();
   $('#rest-result').hide();
   $('#buttom-b').show();
@@ -301,7 +637,7 @@ function findFlight(number) {
       if (response != null && response != '' && departId != null && arrivalId != null) {
         //alert("here3 "+response.length+" "+departId.length+" "+arrivalId.length);
 
-        console.log(departId[0].id + " " + arrivalId[0].id);
+        console.log(response.length);
 
         for (let i = 0; i < response.length; i++) {
 
@@ -315,7 +651,7 @@ function findFlight(number) {
                   getAirlineInfo(flight.airline_id, flightDiv, function(output) {
                     $('#loading').hide();
                     flightDiv = output;
-                    flightDiv.append('<span class="date1">' + ' ' + flight.departs_at.substr(11, 5) + '</span><span class="date2">' + ' ' + flight.arrives_at.substr(11, 5) + '</span>');
+                    flightDiv.append('<span class="date1">' + ' Departs at: ' + flight.departs_at.substr(11, 5) + '</span><span class="date2">' + ' Arrives at: ' + flight.arrives_at.substr(11, 5) + '</span>');
                     flightDiv.append('<button class="select">Select</button>');
                     flight_result_div.append(output);
                   });
@@ -363,7 +699,7 @@ function getFlight(id, handleData) {
 }
 
 function getAirports(flight_id, departId, arrivalId) {
-  $.ajax(root_url + "/airports?filter[depart_id]=" + departId + "&filter[depart_id]", {
+  $.ajax(root_url + "airports", {
     type: 'GET',
     xhrFields: {
       withCredentials: true
@@ -371,17 +707,17 @@ function getAirports(flight_id, departId, arrivalId) {
     success: (response) => {
       if (response != null || response != '') {
         for (let i = 0; i < response.length; i++) {
-          airport_names.push(response.name);
-          airport_codes.push(response.code);
+          airport_cities.push(response[i].city);
+          airport_codes.push(response[i].code);
         }
-
+        console.log(airport_cities);
       } else {
-        alert("Can't get airport ID!");
+        alert("Can't get airports!");
       }
 
     },
     error: function(jqXHR, textStatus, errorThrown) {
-      alert("Can't get airport ID!");
+      alert("Can't get airports!");
     }
   });
 }
@@ -464,11 +800,114 @@ let RoundTrip = function(airport1, airport2, date1, date2, number1, number2, tim
 }
 
 //when one way trip
-
 let SingleTrip = function(airport1, airport2, date1, number1, time11, time12) {
   this.airport1 = airport1;
   this.airport2 = airport2;
   this.date1 = date1;
   this.time11 = time11;
   this.time12 = time12;
+}
+
+
+//-------------------------------------------------------------------auto complete part
+function autocomplete(inp, arr) {
+  /*the autocomplete function takes two arguments,
+  the text field element and an array of possible autocompleted values:*/
+  var currentFocus;
+  /*execute a function when someone writes in the text field:*/
+  inp.addEventListener("input", function(e) {
+    var a, b, i, val = this.value;
+    /*close any already open lists of autocompleted values*/
+    closeAllLists();
+    if (!val) {
+      return false;
+    }
+    currentFocus = -1;
+    /*create a DIV element that will contain the items (values):*/
+    a = document.createElement("DIV");
+    a.setAttribute("id", this.id + "autocomplete-list");
+    a.setAttribute("class", "autocomplete-items");
+    /*append the DIV element as a child of the autocomplete container:*/
+    this.parentNode.appendChild(a);
+    /*for each item in the array...*/
+    for (i = 0; i < arr.length; i++) {
+      /*check if the item starts with the same letters as the text field value:*/
+      if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+        /*create a DIV element for each matching element:*/
+        b = document.createElement("DIV");
+        /*make the matching letters bold:*/
+        b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+        b.innerHTML += arr[i].substr(val.length);
+        /*insert a input field that will hold the current array item's value:*/
+        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+        /*execute a function when someone clicks on the item value (DIV element):*/
+        b.addEventListener("click", function(e) {
+          /*insert the value for the autocomplete text field:*/
+          inp.value = this.getElementsByTagName("input")[0].value;
+          /*close the list of autocompleted values,
+          (or any other open lists of autocompleted values:*/
+          closeAllLists();
+        });
+        a.appendChild(b);
+      }
+    }
+  });
+  /*execute a function presses a key on the keyboard:*/
+  inp.addEventListener("keydown", function(e) {
+    var x = document.getElementById(this.id + "autocomplete-list");
+    if (x) x = x.getElementsByTagName("div");
+    if (e.keyCode == 40) {
+      /*If the arrow DOWN key is pressed,
+      increase the currentFocus variable:*/
+      currentFocus++;
+      /*and and make the current item more visible:*/
+      addActive(x);
+    } else if (e.keyCode == 38) { //up
+      /*If the arrow UP key is pressed,
+      decrease the currentFocus variable:*/
+      currentFocus--;
+      /*and and make the current item more visible:*/
+      addActive(x);
+    } else if (e.keyCode == 13) {
+      /*If the ENTER key is pressed, prevent the form from being submitted,*/
+      e.preventDefault();
+      if (currentFocus > -1) {
+        /*and simulate a click on the "active" item:*/
+        if (x) x[currentFocus].click();
+      }
+    }
+  });
+
+  function addActive(x) {
+    /*a function to classify an item as "active":*/
+    if (!x) return false;
+    /*start by removing the "active" class on all items:*/
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    /*add class "autocomplete-active":*/
+    x[currentFocus].classList.add("autocomplete-active");
+  }
+
+  function removeActive(x) {
+    /*a function to remove the "active" class from all autocomplete items:*/
+    for (var i = 0; i < x.length; i++) {
+      x[i].classList.remove("autocomplete-active");
+    }
+  }
+
+  function closeAllLists(elmnt) {
+    /*close all autocomplete lists in the document,
+    except the one passed as an argument:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /*execute a function when someone clicks in the document:*/
+  document.addEventListener("click", function(e) {
+    closeAllLists(e.target);
+  });
 }

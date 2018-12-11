@@ -10,7 +10,7 @@ body, html {
 
 p, button, input {
   font-size: 14pt;
-  font-family: "Raleway";
+  font-family: "Times New Roman";
 }
 
 button {
@@ -177,13 +177,12 @@ input {
 
 .sideBar {
   float: left;
-  width: 20%;
+  width: 22%;
   height: 350px;
-  padding: 3%;
+  color: white;
+  padding: 2%;
   border-radius: 5px;
-  border: 2px solid #86193d;
-  box-shadow: 0px 2px 10px 5px gray;
-  font-size: 14pt;
+  background-color: #86193d;
 }
 
 .main {
@@ -210,73 +209,85 @@ input {
   padding-bottom: 1%;
 }
 
-#result {
+#result{
   height: 330px;
   overflow: auto;
 }
 
-#depart {
+
+#depart{
+  width:100%;
+}
+
+.sideBar input{
   width: 100%;
 }
 
-.sideBar input {
-  width: 100%;
-}
-
-#trip-type input {
+#trip-type input{
   width: auto;
 }
 
-#trip-type {
+#trip-type{
+  margin-top:1em;
+}
+
+#search{
   margin-top: 1em;
 }
 
-#search {
-  padding: 4%;
-  margin-top: 1em;
-}
-
-#trip-date input {
+#trip-date input{
   font-size: small;
 }
 
-#trip-date {
-  margin-top: 1em;
+#trip-date{
+  margin-top:1em;
 }
 
-#buttom-b {
-  margin-top: 0.5em;
+#buttom-b{
+  margin-top:0.5em;
   width: 100%;
 }
 
-#buttom-b button {
+#buttom-b button{
   float: right;
   width: auto;
 }
 
-#result button {
+#result button{
   padding: unset;
   width: 3em;
   float: right;
 }
 
-.flight {
+.flight{
   overflow: auto;
-  width: 98%;
+  width:98%;
 }
 
+.flight span{
+  vertical-align: middle;
+}
+
+#selected1,#selected2{
+  background-color:#c8255b;
+  width:4em !important;
+}
+
+<<<<<<< HEAD
+
 /*------ autocomplete --------------*/
+
 .autocomplete {
   /*the container must be positioned relative:*/
   position: relative;
   display: inline-block;
 }
 
+
 input[type=text] {
   background-color: #f1f1f1;
   width: 100%;
 }
-
 input[type=submit] {
   background-color: DodgerBlue;
   color: #fff;
@@ -297,95 +308,47 @@ input[type=submit] {
 .autocomplete-items div {
   padding: 10px;
   cursor: pointer;
-  background-color: #fff;
-  border-bottom: 1px solid #d4d4d4;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4; 
   color: black;
 }
-
 .autocomplete-items div:hover {
   /*when hovering an item:*/
-  background-color: #e9e9e9;
+  background-color: #e9e9e9; 
 }
-
 .autocomplete-active {
   /*when navigating through the items using the arrow keys:*/
-  background-color: DodgerBlue !important;
-  color: #ffffff;
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
 }
-
+=======
 /* TODO: style for restaurant */
-#rest-nearby, #rest-nearby, #rest-nearby {
-  /* !!!!!!!!!!: DON KNOW WHY THIS DOES NOT WORK */
-  display: inline;
-  padding: 10px;
+#rest-nearby, #rest-nearby, #rest-nearby{ 
+/* !!!!!!!!!!: DON KNOW WHY THIS DOES NOT WORK */
+	display: inline;
+	padding: 10px;
 }
 
-.rest-panel {
-  width: 560px;
-  height: 800px;
-  margin-left: 0%;
-  padding: 25px;
+.rest-panel{
+	width: 560px;
+	height: 800px;
+	margin-left: 0%;
+	padding: 25px;
 }
-
-.rest-header {
-  padding: 10px;
-  background-color: #ffe4b2;
-  border-bottom: 2px solid;
-  box-shadow: 1px 2px 4px;
-  margin-top: 2%;
-  border-radius: 3px;
+.rest-header{
+	padding: 10px;
+	background-color: #ffe4b2;
+	border-bottom: 2px solid;
+    box-shadow: 1px 2px 4px;
+	margin-top: 2%;
+    border-radius: 3px;
 }
 
 /* Set the size of the div element that contains the map */
 #map {
-  height: 300px;
-  width: 760px;
-  margin-top: 1%;
-  margin-left: 1%
-}
-
-/* Designer's attempt to change style */
-#search {
-  margin-top: 1em;
-  margin-left: 33%;
-}
-
-#loading {
-  margin-top: 22%;
-  margin-left: 40%;
-  color: #86193d;
-  font-size: 16pt;
-}
-
-#flight1, #flight2 {
-  margin-top: 2%;
-  margin-left: 1%;
-  border: 2px solid #86193d;
-  border-radius: 5px;
-  width: 97%;
-}
-
-.flight {
-  padding: 3%;
-  border-bottom: 2px solid gray;
-  overflow: auto;
-  width: 94%;
-}
-
-.flight span {
-  font-size: 16pt;
-}
-
-span.airlineName {
-  font-weight: bold;
-}
-
-.select {
-  width: 12% !important;
-  padding: 1% !important;
-}
-
-input {
-  background-color: #bcbaba;
-  padding: 1%;
-}
+	height: 300px;  
+	width: 760px;
+	margin-top: 1%;
+	margin-left: 1%
+ }
+>>>>>>> 3675d53bb5cea293c403af88f9af7e398c6e34ec
