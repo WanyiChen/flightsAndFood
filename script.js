@@ -65,11 +65,6 @@ $(document).ready(() => {
     loadMyTrip();
   });
 
-// FUCNTION moved to loadCity() (12/10/2018 -jie)
- /*  $("#rest").on("click", () => {
-    loadRestaurant();
-  }); */
-
   $("#flight").on("click", () => {
     loadFlight();
   });
@@ -86,9 +81,9 @@ $(document).ready(() => {
       let trip= new SingleTrip(flight.attr('airport1'),flight.attr('airport2'),date1,flight.attr('number'),$(flight.children('.date1')[0]).html(),$(flight.children('.date2')[0]).html());
       
     }
-    console.log(trip);
+    
+	console.log(trip);
 
-    //TODO: loadMyTrip(); 
   });
   
   
@@ -190,17 +185,16 @@ function loadHome() {
   $(".login").hide();
   $(".cities").show();
   $("#nav").show();
+  
+  //upon clicking, build a new interface: myTrip
+  $(".nav-myTrips").on("click", () => {
+    loadMyTrip();
+  });
 }
 
 /* loadMyTrip(): when clicked on MyTrip buttom (12/10/2018 updated by jie)
 	-- (1) show saved flights 
 	-- (2) show saved restaurants  */
-function loadMyTrip() {
-  $("#home-page").hide();
-  $("#city-page").hide();
-  $("#trip-page").show();
-}
-
 function loadCity(cityName) {
   $("#home-page").hide();
   $("#city-page").show();
@@ -226,7 +220,7 @@ function loadCity(cityName) {
 
 /* loadRestaurant(): when clicked on restaurant buttom (12/10/2018 updated by jie)
 	-- (1) restaurantList(): list restaurants 
-	-- (2) restaurantExpand(): 'click to expand' and 'save to MyTrip' */
+	-- (2) setMapRestMarkers(): show restaurant markers on the map and 'save to MyTrip' */
 function loadRestaurant(cityName) {
   $("#rest").css("background-color", "#c8255b");
   $("#flight").css("background-color", "#86193d");
@@ -279,7 +273,7 @@ function restaurantDetails(entity_id, entity_type){
 		
 	$.ajax(zomato_url + "location_details?entity_id=" + entity_id + "&entity_type=" + entity_type,
 		{
-			type: "GET", //send it through get method
+			type: "GET",
 			dataType: 'json',
 			xhrFields: {withCredentials: false},
 			headers: {"user-key": zomato_key},
@@ -477,6 +471,13 @@ function setMapCenterMarker(cityName){
 
 	// To add the marker to the map, call setMap();
 	marker.setMap(map);
+	marker.addListener('click', ()=>{
+		if (marker.getAnimation() !== null) {
+			marker.setAnimation(null);
+		} else {
+			marker.setAnimation(google.maps.Animation.BOUNCE);
+		}
+	});
 	
 }
 
@@ -522,6 +523,12 @@ function setMapRestMarkers(){
 				return function() {
 					infoWindow.setContent(infoWindowContent[i][0]);
 					infoWindow.open(map, marker);
+					
+					if (marker.getAnimation() !== null) {
+						marker.setAnimation(null);
+					} else {
+						marker.setAnimation(google.maps.Animation.BOUNCE);
+					}
 				}
 			})(marker, i));
 			
@@ -531,6 +538,7 @@ function setMapRestMarkers(){
     }
     
 }
+
 
 function initMap() {
   // The map, centered at map_center   
@@ -719,20 +727,20 @@ function findAirportId  (nameOrCode, handleData){
     }
   });
 
-  // $.ajax(root_url + "/airports?filter[code]="+nameOrCode, {
-  //   type: 'GET',
-  //   xhrFields: {
-  //     withCredentials: true
-  //   },
-  //   success: (response) => {
-  //     if(response!=null || response!=''){
-  //       airportId=response[0].id;
-  //     }
-  //   },
-  //   error: function(jqXHR, textStatus, errorThrown) {
-  //     alert("Can't get airort ID!");
-  //   }
-  // });
+	/* $.ajax(root_url + "/airports?filter[code]="+nameOrCode, {
+    type: 'GET',
+    xhrFields: {
+      withCredentials: true
+    },
+    success: (response) => {
+      if(response!=null || response!=''){
+        airportId=response[0].id;
+      }
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      alert("Can't get airort ID!");
+    }
+  }); */
 }
 
 function getAirlineInfo(id,flightDiv,handleData){
@@ -784,3 +792,21 @@ let SingleTrip = function(airport1, airport2, date1, number1, time11,time12){
   this.time12=time12;
 }
 
+/* show flights saved in trips[] with restaurants*/
+var loadMyTrip = function() {
+	
+	$("#home-page").hide();
+	$("#city-page").hide();
+	$("#trip-page").show();
+	
+	$(".nav-home").on('click', () => {
+		loadHome();
+	})
+	
+	listTrips();
+	
+	function listTrips(){
+		
+	}
+
+}
