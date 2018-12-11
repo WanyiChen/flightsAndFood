@@ -74,9 +74,12 @@ $(document).ready(() => {
     loadFlight();
   });
 
+<<<<<<< HEAD
   $('#create').on('click',(e)=>{
     let trip='';
+=======
 	$('#create').on('click',(e)=>{
+>>>>>>> 3675d53bb5cea293c403af88f9af7e398c6e34ec
     let target=$(e.target);
     if(trip_type=='round trip'){
       let flight1=$($('#selected1').parents('.flight')[0]);
@@ -87,10 +90,14 @@ $(document).ready(() => {
       trip= new SingleTrip(flight.attr('airport1'),flight.attr('airport2'),date1,flight.attr('number'),$(flight.children('.date1')[0]).html(),$(flight.children('.date2')[0]).html());  
     }
 
+<<<<<<< HEAD
     trips.push(trip);
     console.log(trip);
     console.log(trips);
     loadMyTrip();
+=======
+    //TODO: loadMyTrip(); 
+>>>>>>> 3675d53bb5cea293c403af88f9af7e398c6e34ec
   });
   
   
@@ -221,10 +228,13 @@ function loadCity(cityName) {
     city='Los Angeles';
     $(".city").css("background-image", "url(pic/la.jpg)");
   }
+<<<<<<< HEAD
   autocomplete(document.getElementById("depart_val"), airport_cities);
   loadRestaurant();
+=======
   
    $("#rest").on("click", () => {
+	   loadRestaurant(cityName);
 	});
 >>>>>>> 3675d53bb5cea293c403af88f9af7e398c6e34ec
 }

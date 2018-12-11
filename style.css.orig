@@ -273,6 +273,7 @@ input {
   width:4em !important;
 }
 
+<<<<<<< HEAD
 
 /*------ autocomplete --------------*/
 
@@ -320,6 +321,7 @@ input[type=submit] {
   background-color: DodgerBlue !important; 
   color: #ffffff; 
 }
+=======
 /* TODO: style for restaurant */
 #rest-nearby, #rest-nearby, #rest-nearby{ 
 /* !!!!!!!!!!: DON KNOW WHY THIS DOES NOT WORK */
@@ -349,3 +351,4 @@ input[type=submit] {
 	margin-top: 1%;
 	margin-left: 1%
  }
+>>>>>>> 3675d53bb5cea293c403af88f9af7e398c6e34ec
