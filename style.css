@@ -29,7 +29,7 @@ input {
   margin: 2%;
 }
 
-#home-page, #city-page {
+#home-page, #city-page, #trip-page {
   height: 100%;
 }
 
@@ -320,6 +320,10 @@ input[type=submit] {
   padding: 10px;
 }
 
+#rest {
+  background-color: #c8255b;
+}
+
 .rest-panel {
   width: 560px;
   height: 800px;
@@ -389,3 +393,86 @@ input {
   background-color: #bcbaba;
   padding: 1%;
 }
+
+.restWrap button {
+  float: right;
+}
+
+.restWrap p {
+  float: left;
+}
+
+.restWrap {
+  height: 50px;
+  vertical-align: middle;
+}
+
+#restBar button {
+  padding: 3%;
+}
+
+#rest-search {
+  margin-top: 1em;
+  margin-left: 33%;
+}
+
+/* stype for loadMyTrip() */
+.add-rest{
+  float: auto !important;
+  display: block !important;
+  border-radius: 2px !important;
+  background-color: #86193d !important;
+  color: white !important;
+}
+
+.trip-panel{
+	margin-left: 10%;
+	width: 1200px;
+}
+
+.flight-mask {
+  background-color: rgba(10, 66, 148, 0.5);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto;
+  margin-top: 2%;
+  border-radius: 2px;
+  
+}
+
+h3 {
+	font-size: 24px;
+	color: #fbf9f1;
+	text-align: center;  
+	font-family: "Arial Black", Gadget, sans-serif;
+	text-shadow: text-shadow: -1px 0 black, 0 1px black,
+      1px 0 black, 0 -1px black;
+}
+
+.flight-mask p {
+  font-size: 20px;
+  color: #FDFF00;
+  text-align: center;
+  font-family: "Arial Black", Gadget, sans-serif;
+  text-shadow: text-shadow: -1px 0 black, 0 1px black,
+      1px 0 black, 0 -1px black;
+}
+
+.button-savedRest {
+	margin-left: 18% !important;
+	width: 800px !important;
+	height: 30px !important;
+	font-size: 16px !important;	
+}
+
+
+.saved-rest{
+	font-size: 16px;
+	text-align: center;
+	color: #FDFF00;
+	font-family: "Arial Black", Gadget, sans-serif;
+	text-shadow: text-shadow: -1px 0 black, 0 1px black,
+      1px 0 black, 0 -1px black;
+}
+
+

@@ -70,26 +70,42 @@
     </div>
     <div class="content container">
       <div class="sideBar">
-        <div class="autocomplete" id="depart">Departure from: <br>
-          <input id="depart_val" name="cities" placeholder="City Name">
-        </div>
-          <div id="trip-type"><input type="radio" name="flight" value="round-trip" checked="checked"> Round Trip
-            <br>
-            <input type="radio" name="flight" value="one-way"> One Way<br>
-        </div>
-            <div id="trip-date">
-              <div id="trip-date"><span>Departure Date:</span>
-                <br>
-        </div>
-                <input type="date" id="date-1" value="2018-11-28" min="2018-11-28" max="2019-01-14">
+          <div id="flightBar" hidden="true"> 
+			<div class="autocomplete" id="depart">Departure from: <br>
+			  <input id="depart_val" name="cities" placeholder="City Name">
+			</div>
+			  <div id="trip-type"><input type="radio" name="flight" value="round-trip" checked="checked"> Round Trip
+				<br>
+				<input type="radio" name="flight" value="one-way"> One Way<br>
+			</div>
+				<div id="trip-date">
+				  <div id="trip-date"><span>Departure Date:</span>
+					<br>
+			  </div>
+					<input type="date" id="date-1" value="2018-11-28" min="2018-11-28" max="2019-01-14">
 
-                <div id='return-date'>
-                  <span>Return Date:</span><br>
-                  <input type="date" id="date-2" value="2018-12-23" min="2018-11-28" max="2019-01-14">
+					<div id='return-date'>
+					  <span>Return Date:</span><br>
+					  <input type="date" id="date-2" value="2018-12-23" min="2018-11-28" max="2019-01-14">
         </div>
                 </div>
                 <button id="search">Search</button>
-
+              </div>
+              <div id="restBar">
+                <div class="restWrap">
+                  <p>Nearby restaurants</p>
+                  <button id='rest-nearby'>Go</button>
+                </div>
+                <div class="restWrap">
+                  <p>Best-rated restaurants</p>
+                  <button id='rest-best'>Go</button>
+                </div>
+                <div class="restWrap">
+                  <p>Search by keyword (cuisines, etc.): </p>
+                </div>
+                <input id='rest-search-val' placeholder='Chinese food'>
+                <button id='rest-search'>Search</button>
+              </div>
               </div>
               <div class="main">
                 <button id="rest">Restaurant</button>
@@ -113,20 +129,22 @@
                   <button hidden="true" id='create'>Create trip</button>
                 </div>
               </div>
+            </div>
 
-              <div id="trip-page" hidden="true">
-                <div class="trip header">
-                  <div class="mask">
-                    <div>
-                      <div id="nav">
-                        <p class="nav-home">Home</p>
-                        <p class="nav-myTrips">My Trips</p>
-                      </div>
-                    </div>
-                    <h1>My Trips</h1>
+          </div>
+          <div id="trip-page" hidden="true">
+            <div class="trip header">
+              <div class="mask">
+                <div>
+                  <div id="nav">
+                    <p class="nav-home">Home</p>
+                    <p class="nav-myTrips">My Trips</p>
                   </div>
                 </div>
+                <h1>My Trips</h1>
               </div>
+            </div>
+          </div>
 </body>
 
 </html>
