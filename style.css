@@ -29,7 +29,7 @@ input {
   margin: 2%;
 }
 
-#home-page, #city-page {
+#home-page, #city-page, #trip-page {
   height: 100%;
 }
 
@@ -389,3 +389,18 @@ input {
   background-color: #bcbaba;
   padding: 1%;
 }
+
+/* stype for loadMyTrip() */
+.flight-mask {
+  height: 160px;
+  width: 500px;
+  background-color: rgba(10, 66, 148, 0.5);
+}
+
+.flight-mask p {
+  font-size: 25px;
+  font-weight: bold;
+  color: white;
+}
+
+

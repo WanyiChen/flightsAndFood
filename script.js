@@ -14,7 +14,8 @@ var zomato_key = "2ee136670cff3a1bd2e4a6d8427f1e36"; //as obtained from [Zomato 
 var map;
 var center_lat = 38.889931
 var center_lng = 77.009003;
-var markers, infoWindowContent
+var markers, infoWindowContent;
+var restSaved = [];
 
 $(document).ready(() => {
   getAirports();
@@ -76,13 +77,28 @@ $(document).ready(() => {
     if (trip_type == 'round trip') {
       let flight1 = $($('#selected1').parents('.flight')[0]);
       let flight2 = $($('#selected2').parents('.flight')[0]);
-      trip = new RoundTrip(flight1.attr('airport1'), flight1.attr('airport2'), date1, date2, flight1.attr('number'), flight2.attr('number'), $(flight1.children('.date1')[0]).html(), $(flight1.children('.date2')[0]).html(), $(flight2.children('.date1')[0]).html(), $(flight2.children('.date2')[0]).html());
+      trip = new RoundTrip(flight1.attr('airport1'), flight1.attr('airport2'), 
+                    date1, date2, flight1.attr('number'), flight2.attr('number'), 
+                    $(flight1.children('.date1')[0]).html(), $(flight1.children('.date2')[0]).html(), 
+                    $(flight2.children('.date1')[0]).html(), $(flight2.children('.date2')[0]).html());
+    
+      trips.push(trip);
+    
+      console.log("adding " + trip.airport1 + "___to___"+ trips);
+      console.log("adding " + trip.airport2 + "___to___"+ trips);
     } else {
       let flight = $($('#selected1').parents('.flight')[0]);
-      trip = new SingleTrip(flight.attr('airport1'), flight.attr('airport2'), date1, flight.attr('number'), $(flight.children('.date1')[0]).html(), $(flight.children('.date2')[0]).html());
+      trip = new SingleTrip(flight.attr('airport1'), flight.attr('airport2'), date1, 
+                    flight.attr('number'), $(flight.children('.date1')[0]).html(), 
+                    $(flight.children('.date2')[0]).html());
+      
+      trips.push(trip);
+      
+      console.log("adding " + trip.airport1 + "___to___"+ trips);
+      console.log("adding " + trip.airport2 + "___to___"+ trips);
     }
     
-	console.log(trip);
+  console.log(trip);
 
   });
 
@@ -189,23 +205,81 @@ function loadHome() {
   $(".cities").show();
   $("#nav").show();
   
-  //upon clicking, build a new interface: myTrip
-  $(".nav-myTrips").on("click", () => {
-    loadMyTrip();
-  });
 }
 
-/* loadMyTrip(): when clicked on MyTrip buttom (12/10/2018 updated by jie)
-	-- (1) show saved flights
+/* loadMyTrip(): when clicked on MyTrip buttom (12/11/2018 updated by jie)
+  -- (1) show saved flights
   -- (2) show saved restaurants  */
 function loadMyTrip () {
+  $('body').empty();	
   $("#home-page").hide();
   $("#city-page").hide();
   $("#trip-page").show();
 
+  $("#trip-page").append("<div class = 'trip-panel'></div>");
+  let tpanel = $(".trip-panel");
 
-}
+  for (let i=0; i<trips.length; i++){
+    
+      var cityName;
+      tpanel.append("<div class = 'flight-mask' id = 'fmId_"+i+"'></div>");
+      
+      let fi = $("#fmId_"+i);
 
+      //append images to each saved flight
+      console.log("trip[i].airport1: " + trip[i].airport1);
+      console.log("trip[i].airport2: " + trip[i].airport2);   
+      if (trip[i].airport2 == "SFO") {
+        cityName = "San Francisco";
+        fi.css("background-image", "url(pic/sfo.jpg)");
+      } else if (trip[i].airport2 == "JFK" || trip[i].airport2 == "LGA" || trip[i].airport2 == "NOP" 
+                  || trip[i].airport2 == "TSS" || trip[i].airport2 == "JRA") {
+        cityName = "New York City";
+        fi.css("background-image", "url(pic/nyc.jpg)");
+      } else if (trip[i].airport2 == "ORD" || trip[i].airport2 == "MDW") {
+        cityName = "Chicago";
+        fi.css("background-image", "url(pic/chi.jpeg)");
+      } else if (trip[i].airport2 == "LAX" || trip[i].airport2 == "LGB" || trip[i].airport2 == "BUR"
+                 || trip[i].airport2 == "VNY") {
+        cityName = "Los Angeles";
+        fi.css("background-image", "url(pic/la.jpg)");
+      }  
+
+      fi.append("<h3>"+trips[i].airport1+" to "+trips[i].airport2 +"</h3>");
+      fi.append("<div id = 'nav-trip_"+i+"'><p class='savedFlight'>"
+                + trips[i].date1 + " " + trips[i].time11 + "" + trips[i].time12 + " " + trips[i].number1
+                +"</p></div>");
+      if(trips[i] instanceof RoundTrip){
+          $("#nav-trip_"+i).append(
+              "<p class='savedFlight'>"
+                + trips[i].date2 + " " + trips[i].time21 + "" + trips[i].time22 + " " + trips[i].number2
+                +"</p>");
+      }
+
+      //append restaurants
+      fi.append("<button class = 'button-savedRest' id = 'bRid_" + i + "'>Click to view saved restaurants at this destination</button>");
+      fi.append("<div class = 'saved-rest' id = 'fir_" + i + "' display = 'none'></div>");
+      let bRid = $("bRid_"+i);
+      let fir = $(".fir_"+i);
+
+      for (let j=0; j<restSaved.length; j++){
+        if(restSaved[i].city == cityName){
+            fir.append(
+              "<div class='fir-header'>"
+              + restSaved[i].name+" "+ restSaved[i].cuisine 
+              + " "+ restSaved[i].rate
+              +"<br>"+restSaved[i].address
+              + "</div>"
+          );
+        }
+      }
+      
+      bRid.on('click', () => {
+          fir.toggle();
+      }); 
+  }
+
+ }
 
 function loadCity(cityName) {
   $("#home-page").hide();
@@ -343,7 +417,14 @@ function restaurantDetails(entity_id, entity_type){
 						+ "<br>RATING: "+response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text
 						+ " ("+response.user_rating.votes+' votes)</p>' 
 						+ '</div>'
-						]);
+            ]);
+            
+            //save restaurants to the corresponding destination (12/11/2018)
+            restSaved.push({name: response.name, 
+                            city: response.location.city, 
+                            cuisine: response.cuisines, 
+                            rate: response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text, 
+                            address: response.location.address});
 					  
 				},
 				error: (jqxhr, status, error) => {
@@ -367,7 +448,7 @@ function restaurantDetails(entity_id, entity_type){
 		markers = [];
 		infoWindowContent = [];
 		
-		for (let i=0; i<Math.min(5, rnearby_array.length); i++){
+		for (let i=0; i<Math.min(5, rbest_objs.length); i++){
 			
 			$.ajax(zomato_url + "restaurant?res_id=" + rbest_objs[i].restaurant.R.res_id,
 			{	
@@ -396,7 +477,15 @@ function restaurantDetails(entity_id, entity_type){
 						+ "<br>RATING: "+response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text
 						+ " ("+response.user_rating.votes+' votes)</p>' 
 						+ '</div>'
-						]);
+            ]);
+            
+             //save restaurants to the corresponding destination (12/11/2018)
+             restSaved.push({name: response.name, 
+              city: response.location.city, 
+              cuisine: response.cuisines, 
+              rate: response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text, 
+              address: response.location.address});
+
 					  
 				},
 				error: (jqxhr, status, error) => {
@@ -452,7 +541,15 @@ function restaurantDetails(entity_id, entity_type){
 						+ "<br>RATING: "+response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text
 						+ " ("+response.user_rating.votes+' votes)</p>' 
 						+ '</div>'
-					]);
+          ]);
+          
+           //save restaurants to the corresponding destination (12/11/2018)
+           restSaved.push({name: response.name, 
+            city: response.location.city, 
+            cuisine: response.cuisines, 
+            rate: response.user_rating.aggregate_rating + " - "+ response.user_rating.rating_text, 
+            address: response.location.address});
+
 				}
 				  
 			},
@@ -501,7 +598,7 @@ function setMapCenterMarker(cityName){
 function setMapRestMarkers(){
 	
     var bounds = new google.maps.LatLngBounds();
-	var myLatlng = new google.maps.LatLng(center_lat,center_lng);
+	  var myLatlng = new google.maps.LatLng(center_lat,center_lng);
     var mapOptions = {
 		zoom: 10,
 		center: myLatlng
@@ -807,6 +904,7 @@ let SingleTrip = function(airport1, airport2, date1, number1, time11, time12) {
   this.airport1 = airport1;
   this.airport2 = airport2;
   this.date1 = date1;
+  this.number1 = number1;
   this.time11 = time11;
   this.time12 = time12;
 }
