@@ -240,6 +240,8 @@ function loadRestaurant(cityName) {
   $('#flight-result').hide();
   $('#rest-result').show();
   $('#buttom-b').hide();
+  $('#restBar').show();
+  $('#flightBar').hide();
 
   //try getting entity_id and entity_type from the city
   $.ajax(zomato_url + 'locations?query=' + cityName, {
@@ -277,12 +279,7 @@ function restaurantDetails(entity_id, entity_type) {
 
   let rlist = $('#rest-result');
 
-  rlist.append("<button id='rest-nearby'>nearby</button>" +
-    "<button id='rest-best'>best-rated</button>" +
-    "<button id='rest-search'>search</button>" +
-    "<input id='rest-search-val' placeholder='type keyword...(cuisines, etc.)'>" +
-    "<div class = 'container rest-panel' hidden = 'true'></div>"
-  );
+  rlist.append("<div class = 'container rest-panel' hidden = 'true'></div>");
   let rpanel = $('.rest-panel');
 
   var rnearby_array, rbest_obj, rsearch;
@@ -573,6 +570,8 @@ function loadFlight() {
   $('#flight-result').show();
   $('#rest-result').hide();
   $('#buttom-b').show();
+  $('#restBar').hide();
+  $('#flightBar').show();
 }
 
 function findFlight(number) {

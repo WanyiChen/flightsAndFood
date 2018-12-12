@@ -320,6 +320,10 @@ input[type=submit] {
   padding: 10px;
 }
 
+#rest {
+  background-color: #c8255b;
+}
+
 .rest-panel {
   width: 560px;
   height: 800px;
@@ -388,4 +392,26 @@ span.airlineName {
 input {
   background-color: #bcbaba;
   padding: 1%;
+}
+
+.restWrap button {
+  float: right;
+}
+
+.restWrap p {
+  float: left;
+}
+
+.restWrap {
+  height: 50px;
+  vertical-align: middle;
+}
+
+#restBar button {
+  padding: 3%;
+}
+
+#rest-search {
+  margin-top: 1em;
+  margin-left: 33%;
 }
